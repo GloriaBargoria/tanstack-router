@@ -14,11 +14,12 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as SettingsImport } from './routes/settings'
+import { Route as SearchImport } from './routes/search'
 import { Route as LayoutImport } from './routes/_layout'
-import { Route as PostRouteImport } from './routes/post/route'
+import { Route as PostIndexImport } from './routes/post/index'
 import { Route as SettingsSettingsidImport } from './routes/settings.$settingsid'
 import { Route as PostPostidImport } from './routes/post/$postid'
-import { Route as LayoutUserRouteImport } from './routes/_layout/user/route'
+import { Route as LayoutUserIndexImport } from './routes/_layout/user/index'
 import { Route as PostPostPostidImport } from './routes/post/post.$postid'
 import { Route as LayoutUserUsernameImport } from './routes/_layout/user/$username'
 
@@ -39,13 +40,13 @@ const SettingsRoute = SettingsImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LayoutRoute = LayoutImport.update({
-  id: '/_layout',
+const SearchRoute = SearchImport.update({
+  path: '/search',
   getParentRoute: () => rootRoute,
 } as any)
 
-const PostRouteRoute = PostRouteImport.update({
-  path: '/post',
+const LayoutRoute = LayoutImport.update({
+  id: '/_layout',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -54,29 +55,34 @@ const IndexLazyRoute = IndexLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
+const PostIndexRoute = PostIndexImport.update({
+  path: '/post/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const SettingsSettingsidRoute = SettingsSettingsidImport.update({
   path: '/$settingsid',
   getParentRoute: () => SettingsRoute,
 } as any)
 
 const PostPostidRoute = PostPostidImport.update({
-  path: '/$postid',
-  getParentRoute: () => PostRouteRoute,
+  path: '/post/$postid',
+  getParentRoute: () => rootRoute,
 } as any)
 
-const LayoutUserRouteRoute = LayoutUserRouteImport.update({
-  path: '/user',
+const LayoutUserIndexRoute = LayoutUserIndexImport.update({
+  path: '/user/',
   getParentRoute: () => LayoutRoute,
 } as any)
 
 const PostPostPostidRoute = PostPostPostidImport.update({
-  path: '/post/$postid',
-  getParentRoute: () => PostRouteRoute,
+  path: '/post/post/$postid',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const LayoutUserUsernameRoute = LayoutUserUsernameImport.update({
-  path: '/$username',
-  getParentRoute: () => LayoutUserRouteRoute,
+  path: '/user/$username',
+  getParentRoute: () => LayoutRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -90,18 +96,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/post': {
-      id: '/post'
-      path: '/post'
-      fullPath: '/post'
-      preLoaderRoute: typeof PostRouteImport
-      parentRoute: typeof rootRoute
-    }
     '/_layout': {
       id: '/_layout'
       path: ''
       fullPath: ''
       preLoaderRoute: typeof LayoutImport
+      parentRoute: typeof rootRoute
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchImport
       parentRoute: typeof rootRoute
     }
     '/settings': {
@@ -118,19 +124,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
-    '/_layout/user': {
-      id: '/_layout/user'
-      path: '/user'
-      fullPath: '/user'
-      preLoaderRoute: typeof LayoutUserRouteImport
-      parentRoute: typeof LayoutImport
-    }
     '/post/$postid': {
       id: '/post/$postid'
-      path: '/$postid'
+      path: '/post/$postid'
       fullPath: '/post/$postid'
       preLoaderRoute: typeof PostPostidImport
-      parentRoute: typeof PostRouteImport
+      parentRoute: typeof rootRoute
     }
     '/settings/$settingsid': {
       id: '/settings/$settingsid'
@@ -139,19 +138,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsSettingsidImport
       parentRoute: typeof SettingsImport
     }
+    '/post/': {
+      id: '/post/'
+      path: '/post'
+      fullPath: '/post'
+      preLoaderRoute: typeof PostIndexImport
+      parentRoute: typeof rootRoute
+    }
     '/_layout/user/$username': {
       id: '/_layout/user/$username'
-      path: '/$username'
+      path: '/user/$username'
       fullPath: '/user/$username'
       preLoaderRoute: typeof LayoutUserUsernameImport
-      parentRoute: typeof LayoutUserRouteImport
+      parentRoute: typeof LayoutImport
     }
     '/post/post/$postid': {
       id: '/post/post/$postid'
-      path: '/post/$postid'
+      path: '/post/post/$postid'
       fullPath: '/post/post/$postid'
       preLoaderRoute: typeof PostPostPostidImport
-      parentRoute: typeof PostRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/_layout/user/': {
+      id: '/_layout/user/'
+      path: '/user'
+      fullPath: '/user'
+      preLoaderRoute: typeof LayoutUserIndexImport
+      parentRoute: typeof LayoutImport
     }
   }
 }
@@ -160,17 +173,16 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
-  PostRouteRoute: PostRouteRoute.addChildren({
-    PostPostidRoute,
-    PostPostPostidRoute,
-  }),
   LayoutRoute: LayoutRoute.addChildren({
-    LayoutUserRouteRoute: LayoutUserRouteRoute.addChildren({
-      LayoutUserUsernameRoute,
-    }),
+    LayoutUserUsernameRoute,
+    LayoutUserIndexRoute,
   }),
+  SearchRoute,
   SettingsRoute: SettingsRoute.addChildren({ SettingsSettingsidRoute }),
   AboutLazyRoute,
+  PostPostidRoute,
+  PostIndexRoute,
+  PostPostPostidRoute,
 })
 
 /* prettier-ignore-end */
@@ -182,27 +194,27 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/post",
         "/_layout",
+        "/search",
         "/settings",
-        "/about"
+        "/about",
+        "/post/$postid",
+        "/post/",
+        "/post/post/$postid"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
     },
-    "/post": {
-      "filePath": "post/route.tsx",
-      "children": [
-        "/post/$postid",
-        "/post/post/$postid"
-      ]
-    },
     "/_layout": {
       "filePath": "_layout.tsx",
       "children": [
-        "/_layout/user"
+        "/_layout/user/$username",
+        "/_layout/user/"
       ]
+    },
+    "/search": {
+      "filePath": "search.tsx"
     },
     "/settings": {
       "filePath": "settings.tsx",
@@ -213,28 +225,26 @@ export const routeTree = rootRoute.addChildren({
     "/about": {
       "filePath": "about.lazy.tsx"
     },
-    "/_layout/user": {
-      "filePath": "_layout/user/route.tsx",
-      "parent": "/_layout",
-      "children": [
-        "/_layout/user/$username"
-      ]
-    },
     "/post/$postid": {
-      "filePath": "post/$postid.tsx",
-      "parent": "/post"
+      "filePath": "post/$postid.tsx"
     },
     "/settings/$settingsid": {
       "filePath": "settings.$settingsid.tsx",
       "parent": "/settings"
     },
+    "/post/": {
+      "filePath": "post/index.tsx"
+    },
     "/_layout/user/$username": {
       "filePath": "_layout/user/$username.tsx",
-      "parent": "/_layout/user"
+      "parent": "/_layout"
     },
     "/post/post/$postid": {
-      "filePath": "post/post.$postid.tsx",
-      "parent": "/post"
+      "filePath": "post/post.$postid.tsx"
+    },
+    "/_layout/user/": {
+      "filePath": "_layout/user/index.tsx",
+      "parent": "/_layout"
     }
   }
 }

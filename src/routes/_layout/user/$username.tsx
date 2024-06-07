@@ -1,7 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
+import UserComponent from '../../../components/UserComponent';
 
 export const Route = createFileRoute('/_layout/user/$username')({
-  component: User
+  component: UserComponent
 })
 
 export default function User() {
