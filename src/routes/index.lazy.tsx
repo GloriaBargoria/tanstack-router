@@ -3,6 +3,7 @@ import { createLazyFileRoute, Link } from "@tanstack/react-router";
 export const Route = createLazyFileRoute("/")({
   component: Home,
 });
+// add commen t
 
 function Home() {
   return (
